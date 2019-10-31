@@ -1,6 +1,6 @@
 # nuxt-prismic-graphql
 
-> Nuxt Prismic examle website
+> Using Nuxtjs with headless CMS - Prismic(GraphQL).
 
 ## Build Setup
 
