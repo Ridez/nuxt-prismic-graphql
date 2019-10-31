@@ -1,10 +1,11 @@
 <template>
   <section class="container">
     <b-row class="posts-row">
-      <b-col class="post-col" sm="6" md="4" v-for="(post, index) in posts.data.allPosts.edges" :key="index">
+      <b-col class="post-col" sm="6" md="4" v-for="post in posts" :key="post.node._meta.id">
         <img class="post-img" :src="post.node.post_image.url">
         <div class="wrap-cont">
           <prismic-rich-text class="post-title" :field="post.node.title"/>
+          <nuxt-link :to="'/post/' + post.node._meta.uid" class="more-btn">Read more</nuxt-link>
         </div>
       </b-col>
     </b-row>
@@ -12,30 +13,24 @@
 </template>
 
 <script>
-import { PrismicLink } from "apollo-link-prismic";
-import { InMemoryCache } from "apollo-cache-inmemory";
-import ApolloClient from "apollo-client";
+import { initPrismic } from "@/prismic-config"
 import gql from "graphql-tag";
-
-const client = new ApolloClient({
-  link: PrismicLink({
-    uri: "https://your-repository-name.prismic.io/graphql",
-  }),
-  cache: new InMemoryCache()
-});
 
 export default {
   async asyncData() {
     try {
-      const posts = await client.query({
+      const posts = await initPrismic.query({
         query: gql`
         {
           allPosts {
             edges {
               node {
                 title
-                desc
                 post_image
+                _meta {
+                  id
+                  uid
+                }
               }
             }
           }
@@ -44,7 +39,7 @@ export default {
       })
 
       return {
-        posts
+        posts: posts.data.allPosts.edges
       }
     } catch(e) {
       console.log(e)
